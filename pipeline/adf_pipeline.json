@@ -1,0 +1,67 @@
+{
+    "name": "pl_mining_kpis",
+    "properties": {
+        "activities": [
+            {
+                "name": "Silver_Build",
+                "type": "DatabricksNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "00:30:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Repos/Miningpipeline/mining-pipeline/silver_build",
+                    "baseParameters": {
+                        "db": "mining",
+                        "silver_table": "silver_flotation"
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "Gold_Build",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Silver_Build",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "00:30:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Repos/Miningpipeline/mining-pipeline/gold_build",
+                    "baseParameters": {
+                        "db": "mining",
+                        "silver_table": "silver_flotation",
+                        "gold_table": "gold_daily_kpis",
+                        "silica_threshold": "2.0"
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastPublishTime": "2025-08-31T21:04:07Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
